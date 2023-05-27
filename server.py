@@ -4,7 +4,7 @@ import asyncio
 from websockets.server import serve
 import datetime
 import os
-from typing import NoReturn
+from typing import NoReturn, TextIO
 
 PORT = os.getenv("PY_WEBSOCKET_PORT_NUMBER", 8765)
 
@@ -16,13 +16,15 @@ async def echo(websocket: any) -> NoReturn:
             f.write(formatted_text + "\n")
             print(formatted_text)
             await asyncio.sleep(1)
-            await send_message(websocket, message)
+            await send_message(f, websocket, message)
 
 
-async def send_message(websocket, message: str) -> NoReturn:
+async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
     await websocket.send(message)
     ts_string = datetime.datetime.utcnow().isoformat()+'Z'
-    print(f"sent: {message} at {ts_string}")
+    formatted_text = f"sent: {message} at {ts_string}"
+    f.write(formatted_text + "\n")
+    print(formatted_text)
 
 
 async def main() -> NoReturn:
