@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "python-websockets-sample-application"
+version = "0.1.0"
+description = ""
+authors = ["tobias <tobias@tobias-leong.dev>"]
+readme = "README.md"
+packages = [{include = "python_websockets_sample_application"}]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+websockets = "^11.0.3"
+asyncio = "^3.4.3"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
