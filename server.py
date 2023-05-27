@@ -2,6 +2,7 @@
 
 import asyncio
 from websockets.server import serve
+from websockets.exceptions import ConnectionClosedOK
 import datetime
 import os
 from typing import NoReturn, TextIO
@@ -28,8 +29,11 @@ async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
 
 
 async def main() -> NoReturn:
-    async with serve(echo, "localhost", 8765):
-        await asyncio.Future()  # run forever
+        async with serve(echo, "localhost", 8765):
+            try:
+                await asyncio.Future()  # run forever
+            except ConnectionClosedOK:
+                print("Connection closed")
 
 if __name__ == "__main__":
     print(f"Starting server at {PORT}")
