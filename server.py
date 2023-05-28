@@ -24,16 +24,16 @@ async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
     await websocket.send(message)
     ts_string = datetime.datetime.utcnow().isoformat()+'Z'
     formatted_text = f"sent: {message} at {ts_string}"
-    f.write(formatted_text + "\n")
+    await f.write(formatted_text + "\n")
     print(formatted_text)
 
 
 async def main() -> NoReturn:
-        async with serve(echo, "localhost", 8765):
-            try:
-                await asyncio.Future()  # run forever
-            except ConnectionClosedOK:
-                print("Connection closed")
+    async with serve(echo, "localhost", 8765):
+        try:
+            await asyncio.Future()  # run forever
+        except ConnectionClosedOK:
+            print("Connection closed")
 
 if __name__ == "__main__":
     print(f"Starting server at {PORT}")
