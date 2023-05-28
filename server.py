@@ -14,7 +14,7 @@ async def echo(websocket: any) -> NoReturn:
     with open("messages.txt", "w") as f:
         async for message in websocket:
             formatted_text = f"received: {message} at {datetime.datetime.utcnow().isoformat()+'Z'}"
-            f.write(formatted_text + "\n")
+            await f.write(formatted_text + "\n")
             print(formatted_text)
             await asyncio.sleep(1)
             await send_message(f, websocket, message)
