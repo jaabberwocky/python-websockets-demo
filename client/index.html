@@ -11,7 +11,7 @@
 <body>
 
     <div class="container">
-        <h1>Hello world</h1>
+        <h1>Websocket Client</h1>
         <h3 id="connected-status">Disconnected</h2>
     </div>
 
@@ -27,17 +27,43 @@
             </table>
     </div>
 
+    <div class="container">
+        <h3>Send Message</h3>
+        <form>
+            <label for="input-text">Enter your message</label>
+            <input type="text" id="input-text" name="input-text">
+            <button type="submit" id="submit-btn">Send</button>
+        </form>
+    </div>
+
 
     <script>
         const ws = new WebSocket("ws://localhost:8765")
         const status = document.getElementById('connected-status')
         const messagesReceived = document.getElementById('messages-received')
+        const input = document.querySelector('#input-text');
+        const submitBtn = document.querySelector('#submit-btn');
+
+        let statusConnected = false;
+
+        submitBtn.addEventListener('click', async (event) => {
+            if (statusConnected) {
+                event.preventDefault();
+                const value = input.value;
+                await ws.send(value)
+                input.value = "";
+                console.log(`Sent message: ${value}`);
+            } else {
+                event.preventDefault();
+                alert("Websocket not connected!")
+            }
+        });
 
         ws.addEventListener('open', () => {
             console.log('ws connection succeeded')
-
+            statusConnected = true;
             status.innerHTML = 'Connected'
-            ws.send('hello world')
+            ws.send('server acknowledges connection')
         })
 
         ws.addEventListener('message', ({ data }) => {
@@ -59,6 +85,13 @@
             console.log('ws connection failed')
 
             status.innerHTML = 'Disconnected (Error)'
+        })
+
+        ws.addEventListener("close", () => {
+            console.log('ws connection closed')
+
+            status.innerHTML = 'Disconnected'
+            statusConnected = false;
         })
     </script>
 </body>
