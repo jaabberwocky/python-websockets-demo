@@ -24,12 +24,22 @@ async def handler(websocket: any) -> NoReturn:
                     for connected_websocket in CONNECTED:
                         await send_message(f, connected_websocket, event_dict['message'])
                 elif event_dict['type'] == 'ping':
-                    await send_message(f, websocket, 'pong')
+                    await send_ping(f, websocket)
                 else:
                     await send_error(f, websocket, "invalid message type")
-                print(CONNECTED)
         except:
             print("error: closing connection.")
+
+
+async def send_ping(f: TextIO, websocket) -> NoReturn:
+    ts_string = datetime.datetime.utcnow().isoformat()+'Z'
+    await websocket.send(json.dumps({
+        'type': 'pong',
+        'ts': ts_string
+    }))
+    formatted_text = f"sent: pong at {ts_string}"
+    f.write(formatted_text + "\n")
+    print(formatted_text)
 
 
 async def log_incoming_message(f: TextIO, websocket, event_dict: dict) -> NoReturn:
