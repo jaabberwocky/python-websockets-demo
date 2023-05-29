@@ -17,7 +17,7 @@ async def handler(websocket: any) -> NoReturn:
     with open("messages.txt", "w") as f:
         try:
             async for event in websocket:
-                event_dict = json.loads(str(event))
+                event_dict = json.loads(event)
                 await log_incoming_message(f, websocket, event_dict)
 
                 if event_dict['type'] == 'message':
