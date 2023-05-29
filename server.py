@@ -9,20 +9,27 @@ from typing import NoReturn, TextIO
 import json
 
 PORT = os.getenv("PY_WEBSOCKET_PORT_NUMBER", 8765)
+CONNECTED = set()
 
 
 async def handler(websocket: any) -> NoReturn:
+    CONNECTED.add(websocket)
     with open("messages.txt", "w") as f:
-        async for event in websocket:
-            event_dict = json.loads(str(event))
-            await log_incoming_message(f, websocket, event_dict)
+        try:
+            async for event in websocket:
+                event_dict = json.loads(str(event))
+                await log_incoming_message(f, websocket, event_dict)
 
-            if event_dict['type'] == 'message':
-                await send_message(f, websocket, event_dict['message'])
-            elif event_dict['type'] == 'ping':
-                await send_message(f, websocket, 'pong')
-            else:
-                await send_error(f, websocket, "invalid message type")
+                if event_dict['type'] == 'message':
+                    for connected_websocket in CONNECTED:
+                        await send_message(f, connected_websocket, event_dict['message'])
+                elif event_dict['type'] == 'ping':
+                    await send_message(f, websocket, 'pong')
+                else:
+                    await send_error(f, websocket, "invalid message type")
+                print(CONNECTED)
+        except:
+            print("error: closing connection.")
 
 
 async def log_incoming_message(f: TextIO, websocket, event_dict: dict) -> NoReturn:
