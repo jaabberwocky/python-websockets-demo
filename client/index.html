@@ -36,6 +36,10 @@
         </form>
     </div>
 
+    <div class="container footer">
+        <a href="https://github.com/jaabberwocky/python-websockets-demo" target="_blank">Code</a>
+    </div>
+
 
     <script>
         const ws = new WebSocket("ws://localhost:8765")
@@ -62,7 +66,7 @@
         ws.addEventListener('open', () => {
             console.log('ws connection succeeded')
             statusConnected = true;
-            status.innerHTML = 'Connected'
+            status.innerHTML = 'Connected 🟢'
             ws.send(JSON.stringify({ "type": "ping" }))
         })
 
@@ -86,13 +90,13 @@
         ws.addEventListener("error", () => {
             console.log('ws connection failed')
 
-            status.innerHTML = 'Disconnected (Error)'
+            status.innerHTML = 'Disconnected (Error) 🔴'
         })
 
         ws.addEventListener("close", () => {
             console.log('ws connection closed')
 
-            status.innerHTML = 'Disconnected'
+            status.innerHTML = 'Disconnected 🔴'
             statusConnected = false;
         })
     </script>
