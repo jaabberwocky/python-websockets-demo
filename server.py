@@ -11,14 +11,36 @@ import json
 PORT = os.getenv("PY_WEBSOCKET_PORT_NUMBER", 8765)
 
 
-async def echo(websocket: any) -> NoReturn:
+async def handler(websocket: any) -> NoReturn:
     with open("messages.txt", "w") as f:
-        async for message in websocket:
-            formatted_text = f"received: {message} at {datetime.datetime.utcnow().isoformat()+'Z'}"
-            f.write(formatted_text + "\n")
-            print(formatted_text)
-            await asyncio.sleep(1)
-            await send_message(f, websocket, message)
+        async for event in websocket:
+            event_dict = json.loads(str(event))
+            await log_incoming_message(f, websocket, event_dict)
+
+            if event_dict['type'] == 'message':
+                await send_message(f, websocket, event_dict['message'])
+            elif event_dict['type'] == 'ping':
+                await send_message(f, websocket, 'pong')
+            else:
+                await send_error(f, websocket, "invalid message type")
+
+
+async def log_incoming_message(f: TextIO, websocket, event_dict: dict) -> NoReturn:
+    ts_string = datetime.datetime.utcnow().isoformat()+'Z'
+    formatted_text = f"received: {event_dict} at {ts_string}"
+    f.write(formatted_text + "\n")
+    print(formatted_text)
+
+
+async def send_error(f: TextIO, websocket, message: str) -> NoReturn:
+    ts_string = datetime.datetime.utcnow().isoformat()+'Z'
+    await websocket.send(json.dumps({
+        'error': message,
+        'ts': ts_string
+    }))
+    formatted_text = f"sent: {message} at {ts_string}"
+    f.write(formatted_text + "\n")
+    print(formatted_text)
 
 
 async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
@@ -33,7 +55,7 @@ async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
 
 
 async def main() -> NoReturn:
-    async with serve(echo, "localhost", 8765):
+    async with serve(handler, "localhost", 8765):
         try:
             await asyncio.Future()  # run forever
         except ConnectionClosedOK:
