@@ -27,9 +27,9 @@ async def handler(websocket: any, f) -> NoReturn:
                 await send_ping(f, websocket)
             else:
                 await send_error(f, websocket, "invalid message type")
-    except:
+    except Exception as e:
         CONNECTED.remove(websocket)
-        print(f"closing connection {websocket.id}")
+        print(f"closing connection {websocket.id} due to ({e})")
 
 
 async def register(f: TextIO, websocket) -> NoReturn:
