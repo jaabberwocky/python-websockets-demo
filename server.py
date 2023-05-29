@@ -35,7 +35,8 @@ async def log_incoming_message(f: TextIO, websocket, event_dict: dict) -> NoRetu
 async def send_error(f: TextIO, websocket, message: str) -> NoReturn:
     ts_string = datetime.datetime.utcnow().isoformat()+'Z'
     await websocket.send(json.dumps({
-        'error': message,
+        'type': 'error',
+        'message': message,
         'ts': ts_string
     }))
     formatted_text = f"sent: {message} at {ts_string}"
@@ -46,6 +47,7 @@ async def send_error(f: TextIO, websocket, message: str) -> NoReturn:
 async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
     ts_string = datetime.datetime.utcnow().isoformat()+'Z'
     await websocket.send(json.dumps({
+        'type': 'message',
         'message': message,
         'ts': ts_string
     }))
