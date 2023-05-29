@@ -37,14 +37,14 @@ async def send_ping(f: TextIO, websocket) -> NoReturn:
         'type': 'pong',
         'ts': ts_string
     }))
-    formatted_text = f"sent: pong at {ts_string}"
+    formatted_text = f"client: {websocket.id} sent: pong at {ts_string}"
     f.write(formatted_text + "\n")
     print(formatted_text)
 
 
 async def log_incoming_message(f: TextIO, websocket, event_dict: dict) -> NoReturn:
     ts_string = datetime.datetime.utcnow().isoformat()+'Z'
-    formatted_text = f"received: {event_dict} at {ts_string}"
+    formatted_text = f"client: {websocket.id} received: {event_dict} at {ts_string}"
     f.write(formatted_text + "\n")
     print(formatted_text)
 
@@ -56,7 +56,7 @@ async def send_error(f: TextIO, websocket, message: str) -> NoReturn:
         'message': message,
         'ts': ts_string
     }))
-    formatted_text = f"sent: {message} at {ts_string}"
+    formatted_text = f"client: {websocket.id} sent: {message} at {ts_string}"
     f.write(formatted_text + "\n")
     print(formatted_text)
 
@@ -68,7 +68,7 @@ async def send_message(f: TextIO, websocket, message: str) -> NoReturn:
         'message': message,
         'ts': ts_string
     }))
-    formatted_text = f"sent: {message} at {ts_string}"
+    formatted_text = f"client: {websocket.id} sent: {message} at {ts_string}"
     f.write(formatted_text + "\n")
     print(formatted_text)
 
