@@ -50,7 +50,7 @@
             if (statusConnected) {
                 event.preventDefault();
                 const value = input.value;
-                await ws.send(value)
+                await ws.send(JSON.stringify({ "type": "message", "message": value }));
                 input.value = "";
                 console.log(`Sent message: ${value}`);
             } else {
@@ -63,7 +63,7 @@
             console.log('ws connection succeeded')
             statusConnected = true;
             status.innerHTML = 'Connected'
-            ws.send('server acknowledges connection')
+            ws.send(JSON.stringify({ "type": "ping" }))
         })
 
         ws.addEventListener('message', ({ data }) => {
