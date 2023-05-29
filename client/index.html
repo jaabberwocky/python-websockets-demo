@@ -70,15 +70,17 @@
             const event = JSON.parse(data)
             console.log("received:" + JSON.stringify(event))
 
-            const row = messagesReceived.insertRow();
-            const message = row.insertCell();
-            const time = row.insertCell();
+            if (event.type === "message") {
+                const row = messagesReceived.insertRow();
+                const message = row.insertCell();
+                const time = row.insertCell();
 
-            // tz conversion
-            let d = new Date(event.ts)
+                // tz conversion
+                let d = new Date(event.ts)
 
-            message.innerHTML = event.message;
-            time.innerHTML = d.toString();
+                message.innerHTML = event.message;
+                time.innerHTML = d.toString();
+            }
         })
 
         ws.addEventListener("error", () => {
